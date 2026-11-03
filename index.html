@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d16">
+<title>RED ACE V5.7 — Macro Intelligence Terminal</title>
+
+<style>
+:root{color-scheme:dark;--bg:#070b12;--panel:#101827;--panel2:#0b1220;--line:#23344b;--txt:#f2f6ff;--muted:#8fa1bb;--red:#ff4058;--green:#42e0a2;--amber:#f5c46b;--blue:#5aa9ff}
+*{box-sizing:border-box}
+html{width:100%;overflow-x:hidden;scroll-behavior:smooth}
+body{width:100%;min-width:320px;overflow-x:hidden;margin:0;background:radial-gradient(ellipse at 12% -10%,#1d3555 0,transparent 36%),radial-gradient(ellipse at 90% 0%,#321a2a 0,transparent 30%),#070b12;color:var(--txt);font:14px/1.48 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:100%;max-width:1240px;margin:0 auto;padding:calc(22px + env(safe-area-inset-top)) 16px calc(36px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 2px 22px;padding:5px 2px 18px;border-bottom:1px solid #26364b}
+.logo{font-size:32px;font-weight:950;letter-spacing:2.5px;line-height:1}.logo i{font-style:normal;color:var(--red);text-shadow:0 0 24px #ff405855}
+.sub{font-size:9px;letter-spacing:4px;color:#a9b8cd;margin-top:7px;font-weight:800}
+.owner{font-size:9px;letter-spacing:1.7px;color:#d0d9e8;text-align:right;line-height:1.8}
+.card{position:relative;background:linear-gradient(145deg,#121e30ed,#0d1522f2);border:1px solid #2a3b53;border-radius:19px;padding:18px;margin:14px 0;box-shadow:0 16px 45px #0005,inset 0 1px #ffffff08;overflow:hidden}
+.card:before{content:"";position:absolute;left:0;top:0;width:3px;height:42px;background:linear-gradient(var(--red),transparent);opacity:.9}
+h2{font-size:15px;letter-spacing:.35px;margin:0 0 12px;font-weight:850;text-transform:uppercase}
+h3{font-size:12px;letter-spacing:.6px;text-transform:uppercase;margin:0 0 8px;color:#dce6f5}
+.muted{color:var(--muted);line-height:1.58;font-size:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pill{font-size:9px;font-weight:850;letter-spacing:1px;padding:7px 10px;border:1px solid #715b2d;color:var(--amber);border-radius:30px;background:#3b2e1638}
+button{border:1px solid #ff6577;border-radius:11px;padding:11px 15px;background:linear-gradient(135deg,#ff4058,#c91f3b);color:white;font-weight:850;font-size:11px;letter-spacing:.35px;margin:4px 5px 4px 0;box-shadow:0 7px 20px #ff405822;cursor:pointer}
+button.alt{background:#1a2a40;border-color:#344d6c;color:#dceaff;box-shadow:none}
+button:disabled{opacity:.5;cursor:wait}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:linear-gradient(145deg,#101c2d,#0a1220);border:1px solid #263950;border-radius:14px;padding:14px;min-width:0;transition:transform .18s,border-color .18s}
+.tile:hover{border-color:#52739b;transform:translateY(-1px)}
+.tile strong{display:block;font-size:16px;letter-spacing:.5px}.tile small{display:block;color:var(--muted);font-size:10px;margin-top:6px;line-height:1.45}
+.big{font-size:23px;font-weight:900;letter-spacing:-.5px;margin-top:5px}.good,.score-positive{color:var(--green)}.bad,.score-negative{color:#ff7888}.warn,.score-neutral{color:var(--amber)}
+table{width:100%;border-collapse:collapse;font-size:11px}td,th{text-align:left;padding:11px 8px;border-bottom:1px solid #26364b;white-space:nowrap}th{color:#91a4be;font-size:9px;letter-spacing:.8px;text-transform:uppercase;font-weight:800}tbody tr:hover{background:#ffffff06}
+.scroll{overflow-x:auto;border:1px solid #26364b;border-radius:12px}.stamp{font-size:10px;color:#8295b0;line-height:1.7;margin-top:10px}
+.bar{height:7px;background:#263449;border-radius:9px;overflow:hidden;margin-top:8px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--red),#ff9a70);width:50%}
+.source-list{display:block}.score-note{font-size:11px;color:var(--muted);line-height:1.6;margin:8px 0 14px}.score-value{font-size:23px!important}.score-detail{font-size:10px;color:var(--muted);line-height:1.5;margin-top:7px}.pair-score{display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding-top:8px;margin-top:8px;font-size:12px}.source-list .metric{display:flex;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid #263449;font-size:11px}.metric:last-child{border:0}
+input[type=date]{color-scheme:dark}.pair-warning{display:flex;flex-direction:column;gap:5px;margin:10px 0 13px;padding:12px 13px;border:1px solid #80622f;border-left:3px solid var(--amber);border-radius:11px;background:linear-gradient(100deg,#4b351b55,#171c27);color:#f7d99a;font-size:11px;line-height:1.55}.pair-warning strong{font-size:10px;letter-spacing:.65px;color:#ffd27b}.pair-warning span{color:#d7dfeb}
+.event{display:grid;grid-template-columns:76px 48px minmax(0,1fr);gap:9px;align-items:center;padding:11px 8px;border-bottom:1px solid #26364b}.event:last-child{border:0}.eventtime{font-size:10px;color:#d5e0f0;font-weight:800}.eventccy{font-size:10px;font-weight:900;color:#fff;background:#263b55;border-radius:6px;padding:5px;text-align:center}.eventtitle{font-size:11px;font-weight:750}.eventmeta{font-size:9px;color:var(--muted);margin-top:4px;line-height:1.5}.impact-high{color:#ff7584}.impact-medium{color:var(--amber)}.impact-low{color:#8fa1bb}
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;align-items:stretch}.hero .card{margin:0}.hero-title{font-size:clamp(22px,5vw,38px);line-height:1.08;font-weight:950;letter-spacing:-1px;margin:12px 0}.hero-title span{color:var(--red)}.hero-kicker{font-size:9px;letter-spacing:2px;color:var(--blue);font-weight:900}
+.quicknav{position:sticky;top:0;z-index:20;display:flex;gap:7px;overflow-x:auto;white-space:nowrap;padding:9px 2px;margin:0 0 14px;background:#070b12eF;border-bottom:1px solid #26364b;backdrop-filter:blur(14px);scrollbar-width:thin}
+.quicknav a{flex:0 0 auto;text-decoration:none;color:#b9c9df;background:#111d2d;border:1px solid #2b405b;border-radius:20px;padding:7px 11px;font-size:10px;font-weight:800;letter-spacing:.3px}
+.quicknav a:active,.quicknav a:focus{color:#fff;border-color:var(--red);outline:none}
+.clockline{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#8fa1bb;font-size:10px;margin-top:9px;font-variant-numeric:tabular-nums}
+section[id]{scroll-margin-top:64px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.tile{transition:none}}
+footer{text-align:center;color:#71839c;font-size:9px;letter-spacing:1.2px;padding:22px 8px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}.grid.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{grid-template-columns:1.4fr 1fr}}
+@media(max-width:520px){main{padding-left:11px;padding-right:11px}.card{padding:15px;border-radius:16px}.logo{font-size:27px}.owner{font-size:8px}.hero{grid-template-columns:1fr}.event{grid-template-columns:66px 43px minmax(0,1fr);gap:7px}.eventtitle{font-size:10px}}
+</style></head>
+<body><main>
+<header><div><div class="logo"><i>RED</i> ACE</div><div class="sub">MACRO INTELLIGENCE TERMINAL</div></div><div class="owner">OWNER · HUDO · V5.7<br><span style="color:#71829b">MOBILE EDITION</span></div></header>
+<nav class="quicknav" aria-label="Rýchla navigácia">
+<a href="#top">OVERVIEW</a><a href="#marketSection">STATUS</a><a href="#ratesSection">FX RATES</a><a href="#macroSection">MACRO</a><a href="#policySection">POLICY</a><a href="#yieldSection">YIELDS</a><a href="#cotSection">COT</a><a href="#calendarSection">CALENDAR</a><a href="#historySection">BACKTEST</a><a href="#expectationsSection">INTELLIGENCE</a>
+</nav>
+
+<section class="hero" id="top">
+ <div class="card">
+  <div class="hero-kicker">GLOBAL FX INTELLIGENCE · 6 CURRENCIES</div>
+  <div class="hero-title">READ THE MACRO.<br><span>TRADE THE EDGE.</span></div>
+  <p class="muted">Fundamenty, menová politika, positioning a makro udalosti na jednom mieste. Dáta majú prednosť pred dojmom.</p>
+ </div>
+ <div class="card">
+  <div class="row"><h2>Terminal status</h2><span class="pill">PUBLIC DATA · AUTO REFRESH</span></div>
+  <div class="grid metrics" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+   <div class="tile"><strong>06</strong><small>MENY V SLEDOVANÍ</small></div>
+   <div class="tile"><strong>05</strong><small>FX PÁROV</small></div>
+   <div class="tile"><strong>−10/+10</strong><small>MAKRO SKÓRE</small></div>
+   <div class="tile"><strong>15 MIN</strong><small>REFRESH CYCLE</small></div>
+  </div>
+ </div>
+</section>
+
+<section class="card" id="marketSection">
+ <div class="row"><h2>Market monitor</h2><span class="pill" id="systemState">PRIPÁJAM ZDROJE…</span></div>
+ <p class="muted">Automatické načítanie verejných dát; frekvencia závisí od konkrétneho poskytovateľa. Referenčné FX kurzy ECB nie sú exekučné ceny brokera. Makro ukazovatele World Bank sú ročné a zverejňujú sa s oneskorením.</p>
+ <div class="row"><button id="refreshBtn" onclick="refreshAll()">↻ Obnoviť teraz</button><button class="alt" onclick="readSummary()">▶ Vypočuť prehľad</button><button class="alt" onclick="stopVoice()">■ Stop</button></div>
+ <div class="stamp" id="refreshTime">Posledná úspešná aktualizácia: —<br>Automatická kontrola zdrojov každých 15 minút; nejde o garantovanú real-time aktualizáciu.</div>
+ <div class="clockline"><span id="localClock">LOKÁLNY ČAS · —</span><span>PUBLIC DATA · NOT EXECUTION DATA</span></div>
+</section>
+<section class="card" id="ratesSection"><h2>Menové páry · ECB referenčné kurzy</h2><div class="grid" id="rates">
+<div class="tile"><strong>EURUSD</strong><small>Načítavam…</small></div><div class="tile"><strong>GBPUSD</strong><small>Načítavam…</small></div><div class="tile"><strong>AUDUSD</strong><small>Načítavam…</small></div><div class="tile"><strong>NZDUSD</strong><small>Načítavam…</small></div><div class="tile"><strong>USDJPY</strong><small>Načítavam…</small></div></div>
+<p class="stamp" id="rateMeta">Zdroj: Frankfurter API (ECB reference rates). —</p></section>
+<section class="card" id="macroSection"><div class="row"><h2>Makro fundamenty</h2><span class="pill" id="macroState">ČAKÁM NA DÁTA</span></div>
+<p class="muted">Zobrazujeme rast HDP, infláciu a nezamestnanosť pre USA, eurozónu, UK, Austráliu, Nový Zéland a Japonsko. Pri každom údaji zobrazujeme skutočný rok pozorovania. Ročné dáta nie sú intradenný signál.</p>
+<div class="scroll"><table><thead><tr><th>Ekonomika</th><th>HDP rast</th><th>Inflácia</th><th>Nezam.</th><th>Obdobie</th></tr></thead><tbody id="macroRows"><tr><td colspan="5">Načítavam oficiálne série…</td></tr></tbody></table></div>
+<p class="stamp" id="macroMeta">Zdroj: World Bank API. Čas načítania a dátum ekonomického pozorovania sú dve odlišné veci.</p></section>
+<section class="card" id="policySection">
+ <div class="row"><h2>Menová politika · centrálne banky</h2><span class="pill" id="policyState">NAČÍTAVAM BIS…</span></div>
+ <p class="muted">Oficiálne denné policy rates z BIS. Zobrazuje poslednú publikovanú hodnotu a dátum pozorovania. Sadzba je úroveň menovej politiky, nie sama osebe očakávaná budúca trajektória.</p>
+ <div class="grid metrics" id="policyCards"><div class="tile"><strong>EUR · USD · GBP</strong><small>Načítavam BIS…</small></div><div class="tile"><strong>AUD · NZD · JPY</strong><small>Načítavam BIS…</small></div></div>
+ <p class="stamp" id="policyMeta">Zdroj: BIS WS_CBPOL · denná frekvencia · —</p>
+</section>
+<section class="card" id="yieldSection">
+ <div class="row"><h2>Výnosové krivky · EUR a USD</h2><span class="pill" id="yieldState">NAČÍTAVAM ECB…</span></div>
+ <p class="muted">ECB modelová AAA zero-coupon krivka pre EUR a oficiálna Treasury par-yield krivka pre USD. Metodiky nie sú identické, preto spread EUR–USD neprezentujeme ako čistý obchodný signál. Ostatné meny zatiaľ nemajú overený jednotný denný feed.</p>
+ <div class="grid metrics" id="yieldCards"><div class="tile"><strong>EUR 2Y</strong><small>Načítavam…</small></div><div class="tile"><strong>EUR 10Y</strong><small>Načítavam…</small></div><div class="tile"><strong>EUR 2s10s</strong><small>Načítavam…</small></div><div class="tile"><strong>USD 2Y</strong><small>Načítavam…</small></div><div class="tile"><strong>USD 10Y</strong><small>Načítavam…</small></div><div class="tile"><strong>USD 2s10s</strong><small>Načítavam…</small></div></div>
+ <p class="stamp" id="yieldMeta">Zdroje: ECB Data Portal YC + U.S. Treasury Daily Yield Curve XML · —</p>
+</section>
+<section class="card" id="cotSection"><div class="row"><h2>CFTC · Commitments of Traders (COT)</h2><span class="pill" id="cotState">NAČÍTAVAM COT…</span></div>
+<p class="muted">Oficiálne týždenné pozície z CFTC Traders in Financial Futures (TFF), futures-only. Sledujeme Leveraged Funds (hedge fondy/CTA) a Asset Managers. COT zachytáva stav k utorku a spravidla sa zverejňuje v piatok; nie je to live order flow.</p>
+<div class="row"><button class="alt" onclick="loadCOT()" id="cotRefresh">↻ Obnoviť COT</button><span class="stamp" id="cotMeta">Zdroj: CFTC TFF Futures Only · —</span></div>
+<div class="scroll"><table><thead><tr><th>Mena / kontrakt</th><th>Leveraged net</th><th>Zmena týž.</th><th>% OI net</th><th>Asset Mgr net</th><th>Report date</th></tr></thead><tbody id="cotRows"><tr><td colspan="6">Načítavam oficiálne CFTC dáta…</td></tr></tbody></table></div>
+<p class="stamp" id="cotNote">Net = long − short. Zmena týž. = zmena čistých pozícií oproti predchádzajúcemu reportu. % OI = čistá pozícia / open interest. USD nemá v tomto zozname priamy samostatný menový kontrakt; USD Index nie je totožný s USD voči každej mene.</p>
+</section>
+
+<section class="card" id="calendarSection">
+ <div class="row"><h2>Economic calendar · makro udalosti</h2><span class="pill" id="calendarState">NAČÍTAVAM KALENDÁR…</span></div>
+ <p class="muted">Vysoko a stredne dôležité udalosti pre EUR, USD, GBP, AUD, NZD a JPY. Časy sa zobrazujú v lokálnom čase zariadenia. Forecast/previous/actual sú uvedené len vtedy, keď ich kalendár poskytne.</p>
+ <div class="row"><button class="alt" onclick="loadCalendar()">↻ Obnoviť kalendár</button><span class="stamp" id="calendarMeta">Zdroj: ShowMyTrades Economic Calendar · —</span></div>
+ <div id="calendarEvents" class="tile" style="padding:4px 10px"><div class="muted">Načítavam udalosti…</div></div>
+ <p class="stamp">Klasifikácia dopadu je poskytovateľská. Pred obchodom over kritické udalosti na stránke pôvodného vydavateľa. <a href="https://showmytrades.com/tools/economic-calendar" target="_blank" rel="noopener" style="color:#7eb8ff">ShowMyTrades Economic Calendar</a>.</p>
+</section>
+
+<section class="card" id="historySection">
+ <div class="row"><h2>Historical Macro Backtest · −10 až +10</h2><span class="pill" id="historyState">VYBER DÁTUM</span></div>
+ <p class="muted">Vyber deň a RED ACE načíta zaznamenané makro udalosti vrátane dostupných hodnôt previous a actual. Konsenzus trhu (forecast) sa v tomto zdroji momentálne systematicky nezbiera, preto sa z neho nedá spoľahlivo vypočítať historické prekvapenie ani news-momentum skóre. Chýbajúce hodnoty zostanú prázdne; previous sa nebude zamieňať za forecast.</p>
+ <div class="row" style="align-items:end">
+  <label style="display:block;flex:1;min-width:170px;color:#aebed3;font-size:10px;font-weight:800">HISTORICKÝ DÁTUM<br><input id="historyDate" type="date" style="display:block;width:100%;margin-top:6px;background:#0a1422;color:#f2f6ff;border:1px solid #344d6c;border-radius:10px;padding:11px;font:inherit"></label>
+  <button onclick="loadHistoricalDay()" id="historyLoad">Načítať deň</button>
+ </div>
+ <div class="stamp" id="historyMeta">Zdroj: Finance Calendar API · historický kalendár · vyžaduje kontrolu pokrytia a dostupnosti.</div>
+ <h3 style="margin-top:16px">Denné fundamentálne skóre mien</h3><div class="grid metrics" id="historyCurrencyScores"><div class="tile"><strong>Vyber dátum</strong><small>Skóre sa zobrazí po načítaní historických udalostí.</small></div></div>
+ <h3 style="margin-top:16px">Historické skóre menových párov</h3><div class="grid metrics" id="historyPairScores"><div class="tile"><strong>Čakám na dátum</strong><small>Relatívne skóre −10 až +10.</small></div></div>
+ <h3 style="margin-top:16px">Historické makro udalosti</h3><div class="scroll"><table><thead><tr><th>Čas</th><th>Mena</th><th>Udalosť</th><th>Dopad</th><th>Previous</th><th>Forecast</th><th>Actual</th><th>Prekvapenie</th><th>Vplyv</th></tr></thead><tbody id="historyRows"><tr><td colspan="9">Vyber dátum a načítaj historické udalosti.</td></tr></tbody></table></div>
+ <div class="pair-warning" role="note"><strong>⚠️ HISTORICKÉ SKÓRE NIE JE OBCHODNÝ SIGNÁL</strong><span>Skóre správ je heuristické hodnotenie prekvapení Actual vs Forecast. Smerový výklad závisí od typu ukazovateľa. Ak chýba actual, forecast alebo rozpoznateľná kategória, udalosť sa nezapočíta. Historické forecasty a predchádzajúce hodnoty môžu byť dodatočne revidované; bez point-in-time archívu nemožno garantovať, že ide presne o informácie dostupné obchodníkovi v danom okamihu. Ročné makro skóre World Bank sa nepoužíva ako historický snapshot, pretože revidované vintage dáta nie sú v tejto verzii archivované.</span></div>
+ <p class="stamp">Historický poskytovateľ: <a href="https://www.financecalendar.com/api/economic-calendar/" target="_blank" rel="noopener" style="color:#7eb8ff">Finance Calendar API</a> · bezplatný prístup podľa aktuálnych limitov, s viditeľnou atribúciou. Pokrytie udalostí a actual/forecast sa líši podľa série.</p>
+</section>
+
+<section class="card" id="oisSection">
+ <div class="row"><h2>Public OIS curves · market rate monitor</h2><span class="pill" id="oisState">ČAKÁM NA DÁTA</span></div>
+ <p class="muted">Verejné indikativne OIS krivky z CheckMySwap: USD SOFR, EUR €STR, GBP SONIA a JPY TONAR. CHF je doplnková mena. AUD a NZD zatiaľ nie sú pokryté. Ide o dátované odhady kriviek, nie live exekučné ceny ani pravdepodobnosti rozhodnutia centrálnej banky.</p>
+ <div class="grid metrics" id="oisCards"><div class="tile"><strong>USD · EUR · GBP · JPY</strong><small>Načítavam verejné krivky…</small></div></div>
+ <p class="stamp" id="oisMeta">Zdroj: CheckMySwap public curve JSON · status sa určí podľa skutočne načítaných dát.</p>
+</section>
+
+<section class="card" id="expectationsSection">
+ <div class="row"><h2>Market rate expectations · očakávania sadzieb</h2><span class="pill" id="expectationsState">ČIASTOČNÉ POKRYTIE</span></div>
+ <p class="muted">Toto je kritický FX faktor: trh obchoduje očakávanú budúcu trajektóriu sadzieb, nie iba aktuálnu policy rate. Bez licencovaného a porovnateľného OIS/futures feedu nebudeme zobrazovať vymyslené pravdepodobnosti zníženia/zvýšenia sadzieb.</p>
+ <div class="grid metrics">
+  <div class="tile"><strong>Policy rates</strong><small>BIS · aktuálne oficiálne úrovne a dátumy pozorovania v paneli vyššie.</small></div>
+  <div class="tile"><strong>Yield curves</strong><small>EUR + USD · trhové výnosové krivky, nie priamo pravdepodobnosť ďalšieho rozhodnutia.</small></div>
+  <div class="tile"><strong>Public OIS curves</strong><small>CheckMySwap · 4/6 hlavných FX mien pri úspešnom načítaní; AUD/NZD chýba. Krivky nie sú pravdepodobnosti sadzieb.</small></div>
+ </div>
+ <p class="stamp">OIS krivky sa zatiaľ nezapočítavajú do skóre. Nie sú to priamo futures-implied pravdepodobnosti rozhodnutí centrálnych bánk; AUD/NZD a jednotné porovnanie všetkých 6 mien chýba.</p>
+</section>
+
+<section class="card"><div class="row"><h2>Makro momentum · −10 až +10</h2><span class="pill" id="scoreState">ČAKÁM NA DÁTA</span></div>
+<p class="score-note">Toto skóre je doplnkový fundamentálny kompas k technickej analýze, nie obchodný signál. Používa ročné zmeny HDP, trhu práce a inflácie. Kladné/ záporné číslo vyjadruje smer makro momenta, nie pravdepodobnosť pohybu kurzu. Dáta sú oneskorené a skóre má nízku dôveru.</p>
+<div class="grid metrics" id="scoreCards"><div class="tile"><strong>EUR</strong><small>Čakám na dáta</small></div><div class="tile"><strong>USD</strong><small>Čakám na dáta</small></div><div class="tile"><strong>GBP</strong><small>Čakám na dáta</small></div><div class="tile"><strong>AUD</strong><small>Čakám na dáta</small></div><div class="tile"><strong>NZD</strong><small>Čakám na dáta</small></div><div class="tile"><strong>JPY</strong><small>Čakám na dáta</small></div></div>
+<h3 style="margin-top:16px">Relative Macro Momentum · poradie</h3><p class="stamp">Poradie vychádza z ročných zmien HDP, trhu práce a inflácie; sadzby, výnosy a COT sú samostatný kontext.</p><div class="grid metrics" id="currencyRanking"></div>
+<h3 style="margin-top:16px">Pair Intelligence · fundamentálne dôkazy</h3><p class="score-note">Pair skóre zobrazuje znamienko relatívneho ročného fundamentálneho momenta: kladné = výhoda základnej meny, záporné = výhoda kótovacej meny. Skóre sa zobrazí, keď majú obe meny aspoň jeden vypočítateľný makro komponent; pri chýbajúcich dátach sa zobrazí DATA GAP.</p><div class="pair-warning" role="note"><strong>⚠️ DÔLEŽITÉ – NIE JE TO VSTUP DO OBCHODU</strong><span>Toto skóre je iba fundamentálny kontext a doplnenie informácií k tvojej vlastnej analýze. Nepredstavuje pokyn BUY/SELL ani potvrdenie na otvorenie pozície. Vstup do obchodu posudzuj samostatne podľa price action, technickej štruktúry, riadenia rizika a svojho obchodného plánu.</span></div><div class="grid metrics" id="pairScores"></div>
+<h3 style="margin-top:16px">Časové horizonty</h3><div class="grid metrics" id="horizonCards"></div>
+<p class="stamp" id="scoreMeta">Skóre sa vypočíta až po načítaní podkladových údajov. Ak údaje chýbajú, komponent sa nezapočíta.</p></section>
+<section class="card"><h2>Stav zdrojov</h2><div id="sourceStatus" class="source-list">
+<div class="metric"><span>ECB / Frankfurter</span><b class="warn">Čakám…</b></div>
+<div class="metric"><span>World Bank API</span><b class="warn">Čakám…</b></div>
+<div class="metric"><span>CFTC COT (TFF)</span><b id="cotSourceStatus" class="warn">Čakám…</b></div>
+<div class="metric"><span>News / analyst consensus</span><b class="warn">Nepripojené</b></div><div class="metric"><span>OIS / futures expectations</span><b class="warn">Nepripojené</b></div>
+</div>
+<p class="muted">Finance Calendar API používa súkromný kľúč uložený na serveri Netlify (premenná REDACE); kľúč nie je súčasťou verejného HTML ani browser JavaScriptu. Historický kalendár poskytuje zaznamenané udalosti a podľa série aj previous/actual. Poskytovateľ momentálne nezhromažďuje trhový consensus (forecast) systematicky; historické skóre prekvapení sa preto vypočíta iba vtedy, ak forecast pri konkrétnej udalosti skutočne existuje. Nejde o kompletný spravodajský feed ani o garantovaný point-in-time archív.</p></section>
+
+<section class="card" id="dataSources">
+ <h2>DATA SOURCES & RESEARCH INFRASTRUCTURE</h2>
+ <p class="muted" style="line-height:1.6">RED ACE využíva kombináciu verejných štatistických databáz, centrálnych bánk, vládnych inštitúcií a poskytovateľov ekonomických dát. Nižšie je transparentný register zdrojov. Označenie „integrované“ znamená, že aplikácia má v aktuálnej verzii príslušný dátový konektor; neznamená to garanciu dostupnosti, úplnosti ani správnosti každej jednotlivej hodnoty.</p>
+ <div class="source-list">
+  <div class="metric"><span><b>Frankfurter API</b><br><small>Referenčné FX kurzy · denná frekvencia · verejné API</small><br><a href="https://frankfurter.dev/" target="_blank" rel="noopener">Dokumentácia a API</a></span><b class="good">INTEGROVANÉ</b></div>
+  <div class="metric"><span><b>European Central Bank · ECB Data Portal</b><br><small>Eurozónové štatistiky, referenčné dáta a výnosová krivka; frekvencia závisí od série.</small><br><a href="https://data.ecb.europa.eu/" target="_blank" rel="noopener">ECB Data Portal</a> · <a href="https://data.ecb.europa.eu/help/api/data" target="_blank" rel="noopener">API dokumentácia</a> · <a href="https://www.ecb.europa.eu/stats/financial_markets_and_interest_rates/euro_area_yield_curves/html/index.en.html" target="_blank" rel="noopener">Yield curves</a></span><b class="good">INTEGROVANÉ</b></div>
+  <div class="metric"><span><b>World Bank · World Development Indicators</b><br><small>HDP growth (NY.GDP.MKTP.KD.ZG), CPI inflation (FP.CPI.TOTL.ZG), unemployment (SL.UEM.TOTL.ZS); prevažne ročné pozorovania, oneskorené a spätne revidovateľné.</small><br><a href="https://data.worldbank.org/" target="_blank" rel="noopener">Open Data</a> · <a href="https://datahelpdesk.worldbank.org/knowledgebase/articles/889392" target="_blank" rel="noopener">Indicators API</a></span><b class="good">INTEGROVANÉ</b></div>
+  <div class="metric"><span><b>Bank for International Settlements · BIS</b><br><small>Central bank policy rates (dataset WS_CBPOL); oficiálne hlásené sadzby, frekvencia podľa série a krajiny.</small><br><a href="https://www.bis.org/statistics/cbpol.htm" target="_blank" rel="noopener">Policy rates</a> · <a href="https://stats.bis.org/api-doc/v2/" target="_blank" rel="noopener">SDMX API</a> · <a href="https://data.bis.org/help/legal" target="_blank" rel="noopener">Podmienky použitia</a></span><b class="good">INTEGROVANÉ</b></div>
+  <div class="metric"><span><b>U.S. Commodity Futures Trading Commission · CFTC</b><br><small>Commitments of Traders · Traders in Financial Futures (TFF), Futures Only; týždenné pozície, report spravidla publikuje s časovým oneskorením. Nie je to live order flow.</small><br><a href="https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm" target="_blank" rel="noopener">COT reports</a> · <a href="https://publicreporting.cftc.gov/" target="_blank" rel="noopener">Public reporting API</a> · <a href="https://www.cftc.gov/MarketReports/CommitmentsofTraders/DisaggregatedExplanatoryNotes/index.htm" target="_blank" rel="noopener">Metodika reportov</a></span><b class="good">INTEGROVANÉ</b></div>
+  <div class="metric"><span><b>U.S. Department of the Treasury</b><br><small>Denná Treasury par yield curve; v RED ACE sa používajú vybrané splatnosti 2Y a 10Y. Nie je to OIS krivka ani priamo obchodovateľná kotácia.</small><br><a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates" target="_blank" rel="noopener">Daily Treasury rates</a></span><b class="good">INTEGROVANÉ</b></div>
+  <div class="metric"><span><b>Finance Calendar · Historical Economic Calendar API</b><br><small>Historické makro udalosti a dostupné previous/actual; consensus nie je systematicky zbieraný. Volanie cez Netlify Function, API kľúč je uložený server-side. Pokrytie sa líši podľa série.</small><br><a href="https://www.financecalendar.com/api/" target="_blank" rel="noopener">API dokumentácia</a> · <a href="https://www.financecalendar.com/" target="_blank" rel="noopener">Finance Calendar</a></span><b class="good">INTEGROVANÉ · HISTÓRIA</b></div>
+  <div class="metric"><span><b>ShowMyTrades · Economic Calendar API</b><br><small>Ekonomický kalendár pre EUR, USD, GBP, AUD, NZD a JPY; udalosti, dopad a hodnoty forecast/previous/actual podľa dostupnosti. Aktualizácia a pokrytie závisia od poskytovateľa.</small><br><a href="https://showmytrades.com/docs/api/economic-calendar" target="_blank" rel="noopener">API dokumentácia</a></span><b class="good">INTEGROVANÉ</b></div>
+  <div class="metric"><span><b>Federal Reserve · Yield Curve Models</b><br><small>Metodický referenčný materiál k modelovaniu americkej výnosovej krivky; tento odkaz nie je samostatným live feedom OIS alebo Fed Funds futures.</small><br><a href="https://www.federalreserve.gov/data/yield-curve-models.htm" target="_blank" rel="noopener">Fed yield curve models</a></span><b class="warn">REFERENČNÝ ZDROJ</b></div>
+ </div>
+ <h3 style="margin-top:22px">ĎALŠIE OFICIÁLNE MAKROEKONOMICKÉ REFERENCIE</h3>
+ <p class="muted" style="line-height:1.8">Tieto inštitúcie predstavujú relevantné primárne zdroje pre budúce rozšírenie dátového pokrytia. V tejto verzii ich neoznačujeme za automaticky napojené ani za zdroj aktuálnych skóre:</p>
+ <div class="source-list">
+  <div class="metric"><span><b>International Monetary Fund · IMF</b><br><small>World Economic Outlook, International Financial Statistics a makroekonomické projekcie.</small><br><a href="https://www.imf.org/en/Data" target="_blank" rel="noopener">IMF Data</a></span><b class="warn">NEINTEGROVANÉ</b></div>
+  <div class="metric"><span><b>OECD Data</b><br><small>Makroekonomické indikátory, leading indicators, ceny a trh práce.</small><br><a href="https://www.oecd.org/en/data.html" target="_blank" rel="noopener">OECD Data</a></span><b class="warn">NEINTEGROVANÉ</b></div>
+  <div class="metric"><span><b>Eurostat</b><br><small>Oficiálne štatistiky Európskej únie vrátane HICP, HDP, trhu práce a priemyslu.</small><br><a href="https://ec.europa.eu/eurostat" target="_blank" rel="noopener">Eurostat</a></span><b class="warn">NEINTEGROVANÉ</b></div>
+  <div class="metric"><span><b>Federal Reserve Bank of St. Louis · FRED</b><br><small>Ekonomické časové rady USA a medzinárodné makro série; samostatný API prístup a podmienky sa posudzujú pred integráciou.</small><br><a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener">FRED</a> · <a href="https://fred.stlouisfed.org/docs/api/fred/" target="_blank" rel="noopener">FRED API</a></span><b class="warn">NEINTEGROVANÉ</b></div>
+  <div class="metric"><span><b>Oficiálne centrálne banky</b><br><small>Federal Reserve, ECB, Bank of England, Bank of Japan, Reserve Bank of Australia a Reserve Bank of New Zealand – rozhodnutia o sadzbách, vyhlásenia, zápisnice a projekcie.</small><br><a href="https://www.federalreserve.gov/monetarypolicy.htm" target="_blank" rel="noopener">Fed</a> · <a href="https://www.ecb.europa.eu/press/govcdec/mopo/html/index.en.html" target="_blank" rel="noopener">ECB</a> · <a href="https://www.bankofengland.co.uk/monetary-policy" target="_blank" rel="noopener">BoE</a> · <a href="https://www.boj.or.jp/en/" target="_blank" rel="noopener">BoJ</a> · <a href="https://www.rba.gov.au/monetary-policy/" target="_blank" rel="noopener">RBA</a> · <a href="https://www.rbnz.govt.nz/monetary-policy" target="_blank" rel="noopener">RBNZ</a></span><b class="warn">REFERENČNÉ ODKAZY</b></div>
+ </div>
+ <h3 style="margin-top:22px">POKRYTIE, OBMEDZENIA A LICENCIE</h3>
+ <p class="muted" style="line-height:1.65">RED ACE v tejto verzii nezahŕňa overený univerzálny live newswire, úplný analytický konsenzus, OIS/futures-implied očakávania pre všetkých šesť mien ani kompletné intradenné makro dáta. Kalendár nie je to isté ako spravodajský feed. Makro skóre vychádza z dostupných ročných indikátorov World Bank a používa vlastnú heuristickú metodiku; nejde o oficiálny rating inštitúcií, investičné odporúčanie ani validovaný predikčný model.</p>
+ <p class="muted" style="line-height:1.65">Pred komerčným predajom RED ACE treba samostatne preveriť licenčné a atribučné podmienky každého poskytovateľa, práva na ďalšiu distribúciu a zobrazovanie dát, limity API, požiadavky na uvedenie zdroja a podmienky komerčného použitia. Verejne dostupné API automaticky neznamená neobmedzené právo na ďalší predaj dát alebo ich redistribúciu. RED ACE nie je spojený, sponzorovaný ani schválený uvedenými inštitúciami.</p>
+ <div class="muted" style="font-size:11px;margin-top:12px">DATA TRANSPARENCY REGISTER · OWNER: HUDO · RED ACE V5.7</div>
+</section>
+
+<footer>RED ACE V5.7 · SMART MACRO TERMINAL · Research dashboard, not investment advice · FX rates are reference rates, not broker quotes.</footer>
+</main>
+<script>
+const economies=[
+ {name:"USA",code:"USA",ccy:"USD"},{name:"Eurozóna (EMU)",code:"EMU",ccy:"EUR"},
+ {name:"UK",code:"GBR",ccy:"GBP"},{name:"Austrália",code:"AUS",ccy:"AUD"},
+ {name:"Nový Zéland",code:"NZL",ccy:"NZD"},{name:"Japonsko",code:"JPN",ccy:"JPY"}
+];
+const indicators=[["NY.GDP.MKTP.KD.ZG","gdp"],["FP.CPI.TOTL.ZG","cpi"],["SL.UEM.TOTL.ZS","unemp"]];
+const cotContracts=[{ccy:"EUR",name:"Euro FX",code:"099741"},{ccy:"GBP",name:"British Pound",code:"096742"},{ccy:"JPY",name:"Japanese Yen",code:"097741"},{ccy:"NZD",name:"New Zealand Dollar",code:"112741"},{ccy:"AUD",name:"Australian Dollar",code:"232741"}];
+let latestCOT={},cotError="";
+let latestMacro={}, latestRates={}, lastSpoken="";
+const fmt=(x)=>x==null?"—":Number(x).toLocaleString("sk-SK",{maximumFractionDigits:2});
+async function fetchMacroBatch(indicator){
+ const codes=economies.map(e=>e.code).join(";");
+ const url=`https://api.worldbank.org/v2/country/${codes}/indicator/${indicator}?format=json&per_page=1000`;
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),12000);
+ try{
+  const r=await fetch(url,{signal:controller.signal,cache:"no-store"});
+  if(!r.ok)throw Error("World Bank HTTP "+r.status);
+  const j=await r.json();
+  if(!Array.isArray(j)||!Array.isArray(j[1]))throw Error("World Bank vrátil neplatnú odpoveď");
+  const out={};
+  for(const row of j[1]){
+   const code=String(row.countryiso3code||row.country?.id||"").toUpperCase();
+   if(!code||row.value===null||row.value===undefined)continue;
+   (out[code]??=[]).push({value:Number(row.value),year:String(row.date)});
+  }
+  for(const code of Object.keys(out)) out[code].sort((a,b)=>Number(b.year)-Number(a.year));
+  return out;
+ }finally{clearTimeout(timer);}
+}
+async function loadMacro(){
+ const settled=await Promise.allSettled(indicators.map(i=>fetchMacroBatch(i[0])));
+ const byIndicator=settled.map(x=>x.status==="fulfilled"?x.value:{});
+ const errors=settled.map((x,i)=>x.status==="rejected"?indicators[i][1]+": "+(x.reason?.name==="AbortError"?"timeout":x.reason?.message||"chyba"):null).filter(Boolean);
+ latestMacro={};let htmlRows="",count=0;
+ const results=economies.map(e=>{
+  const gh=byIndicator[0][e.code]||[]; const ch=byIndicator[1][e.code]||[]; const uh=byIndicator[2][e.code]||[];
+  const gdp=gh[0]||null, gdpPrev=gh[1]||null;
+  const cpi=ch[0]||null, cpiPrev=ch[1]||null;
+  const unemp=uh[0]||null, unempPrev=uh[1]||null;
+  latestMacro[e.ccy]={e,gdp,gdpPrev,cpi,cpiPrev,unemp,unempPrev};
+  count += [gdp,cpi,unemp].filter(Boolean).length;
+  const years=[gdp?.year,cpi?.year,unemp?.year].filter(Boolean);
+  const period=years.length?years.join(" / "):"—";
+  htmlRows+=`<tr><td><b>${e.name}</b></td><td>${gdp?fmt(gdp.value)+"%":"—"}</td><td>${cpi?fmt(cpi.value)+"%":"—"}</td><td>${unemp?fmt(unemp.value)+"%":"—"}</td><td>${period}</td></tr>`;
+  return {e,gdp,gdpPrev,cpi,cpiPrev,unemp,unempPrev};
+ });
+ document.getElementById("macroRows").innerHTML=htmlRows;
+ document.getElementById("macroState").textContent=count+"/18 UKAZOVATEĽOV";
+ const state=count===18?"Aktívne · 18/18":count>0?"Čiastočné · "+count+"/18":"Nedostupné";
+ document.getElementById("macroMeta").textContent="World Bank API · "+state+" · načítané "+new Date().toLocaleString("sk-SK")+". Obdobie každej série je uvedené v tabuľke."+(errors.length?" Chyby: "+errors.join(" | "):"");
+ if(count===0)throw Error(errors.join("; ")||"World Bank neposkytol žiadne hodnoty");
+ return {count,total:18,errors};
+}
+async function loadRates(){
+ const url="https://api.frankfurter.dev/v1/latest?symbols=USD,GBP,AUD,NZD,JPY";
+ const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);
+ let r;
+ try { r=await fetch(url,{signal:controller.signal,cache:"no-store"}); }
+ finally { clearTimeout(timer); }
+ if(!r.ok)throw Error("Frankfurter HTTP "+r.status);
+ const j=await r.json();if(!j || !j.rates || !j.rates.USD)throw Error("Frankfurter returned incomplete rates");
+ const d=j.rates;
+ const usd=d.USD,gbp=d.GBP,aud=d.AUD,nzd=d.NZD,jpy=d.JPY;
+ latestRates={EURUSD:usd,GBPUSD:usd/gbp,AUDUSD:usd/aud,NZDUSD:usd/nzd,USDJPY:jpy/usd,date:j.date};
+ const labels=[["EURUSD",latestRates.EURUSD],["GBPUSD",latestRates.GBPUSD],["AUDUSD",latestRates.AUDUSD],["NZDUSD",latestRates.NZDUSD],["USDJPY",latestRates.USDJPY]];
+ document.getElementById("rates").innerHTML=labels.map(([k,v])=>`<div class="tile"><strong>${k}</strong><div class="big">${fmt(v)}</div><small>ECB referenčný kurz · ${j.date}</small></div>`).join("");
+ document.getElementById("rateMeta").textContent=`Zdroj: Frankfurter API / ECB · dátum referenčného kurzu: ${j.date} · načítané: ${new Date().toLocaleString("sk-SK")}.`;
+}
+
+const policyBanks=[
+ {ccy:"USD",name:"FED · USA",key:"D.US"},
+ {ccy:"EUR",name:"ECB · eurozóna",key:"D.XM"},
+ {ccy:"GBP",name:"BoE · UK",key:"D.GB"},
+ {ccy:"AUD",name:"RBA · Austrália",key:"D.AU"},
+ {ccy:"NZD",name:"RBNZ · Nový Zéland",key:"D.NZ"},
+ {ccy:"JPY",name:"BoJ · Japonsko",key:"D.JP"}
+];
+let latestPolicy={},latestYield={};
+function parseSdmxLast(payload){
+ const ds=payload?.data?.dataSets?.[0]||payload?.dataSets?.[0];
+ const structure=payload?.data?.structure||payload?.structure;
+ if(!ds||!structure)return null;
+ const series=ds.series||{};
+ const obsDims=structure.dimensions?.observation||[];
+ const timeDim=obsDims.findIndex(d=>d.id==="TIME_PERIOD"||d.id==="TIME");
+ let best=null;
+ for(const s of Object.values(series)){
+  const obs=s.observations||{};
+  const keys=Object.keys(obs).sort((a,b)=>Number(b)-Number(a));
+  for(const k of keys){
+   const row=obs[k];if(!row||row[0]===null||row[0]===undefined)continue;
+   const idx=Number(k.split(":")[timeDim>=0?timeDim:0]);
+   const date=timeDim>=0?obsDims[timeDim]?.values?.[idx]?.id:null;
+   const value=Number(row[0]);
+   if(Number.isFinite(value)&&(!best||String(date||"").localeCompare(String(best.date||""))>0))best={value,date};
+  }
+ }
+ return best;
+}
+async function fetchBISRate(bank){
+ const url=`https://stats.bis.org/api/v1/data/WS_CBPOL/${bank.key}?startPeriod=2025-01-01`;
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+ try{
+  const r=await fetch(url,{signal:controller.signal,cache:"no-store",headers:{"Accept":"application/vnd.sdmx.data+json"}});
+  if(!r.ok)throw Error("BIS HTTP "+r.status);
+  const j=await r.json();const last=parseSdmxLast(j);
+  if(!last)throw Error("BIS odpoveď bez pozorovania");
+  return {...bank,...last};
+ }finally{clearTimeout(timer);}
+}
+async function loadPolicy(){
+ document.getElementById("policyState").textContent="NAČÍTAVAM BIS…";
+ const settled=await Promise.allSettled(policyBanks.map(fetchBISRate));
+ latestPolicy={};
+ settled.forEach((x,i)=>{if(x.status==="fulfilled")latestPolicy[policyBanks[i].ccy]=x.value;});
+ const ok=Object.keys(latestPolicy).length;
+ document.getElementById("policyCards").innerHTML=policyBanks.map(b=>{
+  const x=latestPolicy[b.ccy];
+  return `<div class="tile"><strong>${b.ccy} <span class="score-value">${x?fmt(x.value)+"%":"—"}</span></strong><small>${b.name} · ${x?.date||"údaj nedostupný"}</small></div>`;
+ }).join("");
+ document.getElementById("policyState").textContent=ok===6?"BIS AKTÍVNE · 6/6":`${ok}/6 DOSTUPNÝCH`;
+ document.getElementById("policyMeta").textContent=`Zdroj: BIS WS_CBPOL · načítané ${new Date().toLocaleString("sk-SK")} · denná frekvencia; dátum pozorovania je uvedený pri každej mene.`;
+ return {ok,total:6};
+}
+async function fetchECBYieldTenor(tenor){
+ const key=`B.U2.EUR.4F.G_N_A.SV_C_YM.SR_${tenor}`;
+ const url=`https://data-api.ecb.europa.eu/service/data/YC/${key}?format=csvdata&lastNObservations=5`;
+ const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),15000);
+ try{
+  const r=await fetch(url,{signal:ctl.signal,cache:"no-store",headers:{"Accept":"text/csv"}});
+  if(!r.ok)throw Error(`ECB ${tenor} HTTP ${r.status}`);
+  const csv=(await r.text()).trim();
+  if(!csv||csv.startsWith("<?xml"))throw Error(`ECB ${tenor}: prázdna alebo neplatná CSV odpoveď`);
+  const lines=csv.split(/\r?\n/);
+  const parseCSVLine=line=>{const out=[];let cur="",quoted=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){if(quoted&&line[i+1]==='"'){cur+='"';i++;}else quoted=!quoted;}else if(c===','&&!quoted){out.push(cur);cur="";}else cur+=c;}out.push(cur);return out;};
+  const headers=parseCSVLine(lines[0]).map(x=>x.trim().replace(/^\uFEFF/,''));
+  const dateIx=headers.indexOf("TIME_PERIOD"),valueIx=headers.indexOf("OBS_VALUE");
+  if(dateIx<0||valueIx<0)throw Error(`ECB ${tenor}: CSV nemá TIME_PERIOD/OBS_VALUE`);
+  const rows=lines.slice(1).filter(Boolean).map(line=>{const a=parseCSVLine(line);return {date:a[dateIx],value:Number(a[valueIx])};}).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isFinite(x.value)).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!rows.length)throw Error(`ECB ${tenor}: bez platných pozorovaní`);
+  return rows;
+ }finally{clearTimeout(tm);}
+}
+async function loadEuroYield(){
+ document.getElementById("yieldState").textContent="NAČÍTAVAM ECB…";
+ const [twoRows,tenRows]=await Promise.all([fetchECBYieldTenor("2Y"),fetchECBYieldTenor("10Y")]);
+ const tenByDate=new Map(tenRows.map(x=>[x.date,x]));
+ const common=twoRows.find(x=>tenByDate.has(x.date));
+ if(!common)throw Error("ECB YC: 2Y a 10Y nemajú spoločný dátum pozorovania");
+ const ten=tenByDate.get(common.date);
+ latestYield.eur={two:common,ten,spread:ten.value-common.value};
+ document.getElementById("yieldState").textContent="ECB YC AKTÍVNE";
+ document.getElementById("yieldMeta").textContent=`Zdroj: ECB Data Portal · YC · spoločné pozorovanie ${common.date} · načítané ${new Date().toLocaleString("sk-SK")}.`;
+ return latestYield.eur;
+}
+const historyCurrencyNames={USD:"USA",EUR:"Eurozóna",GBP:"UK",AUD:"Austrália",NZD:"Nový Zéland",JPY:"Japonsko"};
+const historyCountryMap={US:"USD",USA:"USD",EU:"EUR",EMU:"EUR",EA:"EUR",GB:"GBP",UK:"GBP",AU:"AUD",AUS:"AUD",NZ:"NZD",NZL:"NZD",JP:"JPY",JPN:"JPY"};
+function historyNum(v){if(v===null||v===undefined||v===""||v==="—")return null;const raw=String(v).replace(/,/g,"").replace(/\s/g,"");const match=raw.match(/[+-]?(?:\d+\.?\d*|\.\d+)/);if(!match)return null;const n=Number(match[0]);return Number.isFinite(n)?n:null;}
+function historyDirection(title,category,actual,forecast){
+ const t=(String(title||"")+" "+String(category||"")).toLowerCase();
+ // Positive surprise direction for the currency. Unknown event types are deliberately excluded.
+ const negativeWords=/unemployment|jobless|claims|失業|nezamestnan|jobless rate/;
+ const positiveWords=/employment|payroll|nonfarm|nfp|gdp|gross domestic|retail sales|industrial production|pmi| ism |business activity|consumer confidence|wage|earnings|exports|trade balance/;
+ const inflationWords=/cpi|consumer price|inflation|pce|ppi|producer price|price index/;
+ const rateWords=/interest rate|policy rate|rate decision|cash rate|bank rate|federal funds|deposit facility/;
+ let direction=0;
+ if(inflationWords.test(t))direction=1; // hotter inflation can lift rate expectations; not universally bullish
+ else if(rateWords.test(t))direction=1;
+ else if(negativeWords.test(t))direction=-1;
+ else if(positiveWords.test(t))direction=1;
+ else return null;
+ return Math.sign(actual-forecast)*direction;
+}
+function historyImpactWeight(impact){const x=String(impact||"").toLowerCase();return x==="high"?3:x==="medium"?1.5:x==="low"?0.5:1;}
+function historyFormat(v){return v===null||v===undefined?"—":String(v);}
+async function loadHistoricalDay(){
+ const dateEl=document.getElementById("historyDate"),date=dateEl.value,state=document.getElementById("historyState"),btn=document.getElementById("historyLoad");
+ if(!date){state.textContent="VYBER DÁTUM";return;}
+ const chosen=new Date(date+"T12:00:00"),today=new Date();today.setHours(23,59,59,999);
+ if(Number.isNaN(chosen.getTime())||chosen>today){state.textContent="NEPLATNÝ / BUDÚCI DÁTUM";document.getElementById("historyMeta").textContent="Historický režim prijíma iba platný dnešný alebo minulý dátum.";return;}
+ btn.disabled=true;state.textContent="NAČÍTAVAM HISTÓRIU…";
+ document.getElementById("historyRows").innerHTML='<tr><td colspan="9">Načítavam historické udalosti…</td></tr>';
+ try{
+  const url=`/.netlify/functions/finance-calendar?date=${encodeURIComponent(date)}`;
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),20000);let res;
+  try{res=await fetch(url,{signal:ctl.signal,cache:"no-store"});}finally{clearTimeout(tm);}
+  const j=await res.json().catch(()=>({}));
+  if(!res.ok)throw Error(`Finance Calendar HTTP ${res.status}${j.error?" · "+j.error:""}`);
+  const events=Array.isArray(j.events)?j.events:[];
+  if(!events.length){state.textContent="0 UDALOSTÍ / OVER POKRYTIE";document.getElementById("historyMeta").textContent=`Finance Calendar API vrátilo 0 záznamov pre ${date}. Neznamená to automaticky, že v daný deň neboli makro udalosti; dostupnosť závisí od historického pokrytia poskytovateľa.`;document.getElementById("historyCurrencyScores").innerHTML='<div class="tile"><strong>Bez skóre</strong><small>Pre tento dátum neboli v odpovedi žiadne udalosti.</small></div>';document.getElementById("historyPairScores").innerHTML='';document.getElementById("historyRows").innerHTML='<tr><td colspan="9">Žiadne udalosti v odpovedi poskytovateľa.</td></tr>';return;}
+  const esc=x=>String(x??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[c]));
+  const totals={USD:{sum:0,w:0,n:0},EUR:{sum:0,w:0,n:0},GBP:{sum:0,w:0,n:0},AUD:{sum:0,w:0,n:0},NZD:{sum:0,w:0,n:0},JPY:{sum:0,w:0,n:0}};
+  const rows=events.map(e=>{
+   const country=String(e.country||e.country_code||"").toUpperCase();
+   const ccy=historyCountryMap[country]||({USD:"USD",EUR:"EUR",GBP:"GBP",AUD:"AUD",NZD:"NZD",JPY:"JPY"}[String(e.currency||e.ccy||"").toUpperCase()]);
+   const title=e.title||e.series_name||e.name||e.event||"Makro udalosť",impact=e.impact||"—";
+   const actual=historyNum(e.actual),forecast=historyNum(e.consensus??e.forecast),previous=e.prior??e.previous??null;
+   const direction=actual!==null&&forecast!==null?historyDirection(title,e.category,actual,forecast):null;
+   const weight=historyImpactWeight(impact);let contribution=null;
+   if(ccy&&totals[ccy]&&direction!==null){const scale=Math.max(Math.abs(forecast)*0.02,Math.abs(actual-forecast),0.000001);const surprise=clamp(((actual-forecast)/scale)*direction,-3,3);contribution=surprise*weight;totals[ccy].sum+=contribution;totals[ccy].w+=weight;totals[ccy].n++;}
+   const raw=actual!==null&&forecast!==null?(actual-forecast):null;
+   let time="Čas neuvedený";
+   if(e.time_local)time=String(e.time_local);
+   else if(e.release_at_utc||e.time_utc){const d=new Date(e.release_at_utc||e.time_utc);if(!Number.isNaN(d.getTime()))time=d.toLocaleTimeString("sk-SK",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Bratislava"});}
+   return {time,ccy:ccy||e.currency||country||"—",title,impact,previous,forecast:e.consensus??e.forecast??null,actual,raw,contribution};
+  });
+  const ccyScores={};Object.entries(totals).forEach(([k,v])=>ccyScores[k]=v.w?(v.sum/v.w)*3.333:null);
+  document.getElementById("historyCurrencyScores").innerHTML=Object.entries(ccyScores).map(([k,v])=>v===null?`<div class="tile"><strong>${k}</strong><div class="big warn">N/A</div><small>${historyCurrencyNames[k]} · zdroj neposkytol vyhodnotiteľné actual vs forecast prekvapenia</small></div>`:`<div class="tile"><strong>${k}</strong><div class="big ${v>0.25?"score-positive":v< -0.25?"score-negative":"score-neutral"}">${v>0?"+":""}${v.toFixed(1)}</div><small>${historyCurrencyNames[k]} · ${totals[k].n} vyhodnotených prekvapení · heuristické news momentum</small></div>`).join("");
+  const pairs=[["EUR/USD","EUR","USD"],["GBP/USD","GBP","USD"],["AUD/USD","AUD","USD"],["NZD/USD","NZD","USD"],["USD/JPY","USD","JPY"]];
+  document.getElementById("historyPairScores").innerHTML=pairs.map(([p,a,b])=>{const x=ccyScores[a],y=ccyScores[b];if(x===null||y===null)return `<div class="tile"><strong>${p}</strong><div class="big warn">N/A</div><small>Bez forecast prekvapení sa nedá vypočítať porovnateľné skóre.</small></div>`;const v=clamp((x-y)/2);return `<div class="tile"><strong>${p}</strong><div class="big ${v>0.25?"score-positive":v< -0.25?"score-negative":"score-neutral"}">${v>0?"+":""}${v.toFixed(1)}</div><small>${v>0?`${a} mala silnejšie news momentum`:v<0?`${b} mala silnejšie news momentum`:"Bez jasnej relatívnej prevahy"} · ${date}</small></div>`;}).join("");
+  document.getElementById("historyRows").innerHTML=rows.map(r=>`<tr><td>${esc(r.time)}</td><td><b>${esc(r.ccy)}</b></td><td>${esc(r.title)}</td><td>${esc(r.impact)}</td><td>${esc(historyFormat(r.previous))}</td><td>${esc(historyFormat(r.forecast))}</td><td>${esc(historyFormat(r.actual))}</td><td>${r.raw===null?"—":(r.raw>0?"+":"")+r.raw.toFixed(4)}</td><td class="${r.contribution===null?"warn":r.contribution>0?"good":r.contribution<0?"bad":"warn"}">${r.contribution===null?"NEVYHODNOTENÉ":(r.contribution>0?"+":"")+r.contribution.toFixed(2)}</td></tr>`).join("");
+  const attribution=j.attribution?.source||"financecalendar.com";
+  document.getElementById("historyMeta").textContent=`Finance Calendar API · ${date} · ${events.length} udalostí · ${attribution} · načítané ${new Date().toLocaleString("sk-SK")}. Consensus/forecast je pri tomto zdroji často nedostupný; previous nie je náhradou forecastu.`;
+  state.textContent=`${events.length} UDALOSTÍ · HOTOVO`;
+ }catch(e){state.textContent="HISTÓRIA NEDOSTUPNÁ";document.getElementById("historyMeta").textContent=`Historický kalendár sa nepodarilo načítať: ${e.message}. Skontroluj Netlify Function, premennú REDACE a API limit.`;document.getElementById("historyRows").innerHTML='<tr><td colspan="9">Chyba načítania historických udalostí.</td></tr>';}
+ finally{btn.disabled=false;}
+}
+async function loadCalendar(){
+ const state=document.getElementById("calendarState"),box=document.getElementById("calendarEvents");
+ state.textContent="NAČÍTAVAM…";
+ try{
+  const url="https://showmytrades.com/api/public/calendar/v1?currency=EUR,USD,GBP,AUD,NZD,JPY&impact=high,medium&days=7&format=json";
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),15000);
+  let r;try{r=await fetch(url,{signal:ctl.signal,cache:"no-store"});}finally{clearTimeout(tm);}
+  if(!r.ok)throw Error("Calendar HTTP "+r.status);
+  const j=await r.json();if(!Array.isArray(j.events))throw Error("Neplatný formát kalendára");
+  const events=j.events.slice().sort((a,b)=>Number(a.ts)-Number(b.ts));
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const now=Date.now()/1000;
+  const visible=events.filter(e=>Number(e.ts)>=now-6*3600).slice(0,50);
+  if(!visible.length)box.innerHTML='<div class="muted" style="padding:14px">V nasledujúcich 7 dňoch nie sú v tomto filtri žiadne udalosti.</div>';
+  else box.innerHTML=visible.map(e=>{
+   const dt=new Date(Number(e.ts)*1000);
+   const time=dt.toLocaleString("sk-SK",{weekday:"short",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+   const imp=String(e.impact||"medium").toLowerCase();
+   const meta=[e.period?"Period: "+e.period:"",e.status||"",e.confidence||""].filter(Boolean).join(" · ");
+   const vals=[e.forecast!==null&&e.forecast!==undefined&&e.forecast!==""?"Forecast "+e.forecast:"",e.previous!==null&&e.previous!==undefined&&e.previous!==""?"Previous "+e.previous:"",e.actual!==null&&e.actual!==undefined&&e.actual!==""?"Actual "+e.actual:""].filter(Boolean).join(" | ");
+   return `<div class="event"><div class="eventtime">${esc(time)}</div><div class="eventccy">${esc(e.currency||"—")}</div><div><div class="eventtitle">${esc(e.title||"Macro event")} <span class="impact-${esc(imp)}">● ${esc(imp.toUpperCase())}</span></div><div class="eventmeta">${esc([vals,meta].filter(Boolean).join(" · ")||"Hodnoty zatiaľ nie sú k dispozícii")}</div></div></div>`;
+  }).join("");
+  state.textContent=visible.length+" UDALOSTÍ · 7 DNÍ";
+  document.getElementById("calendarMeta").textContent=`ShowMyTrades Calendar · server UTC ${j.server_time||"—"} · načítané ${new Date().toLocaleString("sk-SK")}`;
+  return {count:visible.length};
+ }catch(e){
+  state.textContent="KALENDÁR NEDOSTUPNÝ";
+  box.innerHTML=`<div class="muted" style="padding:14px">Kalendár sa nepodarilo načítať: ${String(e.message||e)}. Skús obnoviť.</div>`;
+  document.getElementById("calendarMeta").textContent="Posledný pokus: "+new Date().toLocaleString("sk-SK");
+  throw e;
+ }
+}
+function formatObsDate(value){if(!value)return null;const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString("sk-SK");}
+async function loadUSTreasuryYield(){
+ const year=new Date().getFullYear();
+ const url=`https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=${year}`;
+ const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),15000);
+ try{
+  const r=await fetch(url,{signal:ctl.signal,cache:"no-store"});
+  if(!r.ok)throw Error("US Treasury HTTP "+r.status);
+  const xml=await r.text(),doc=new DOMParser().parseFromString(xml,"text/xml");
+  if(doc.querySelector("parsererror"))throw Error("Treasury XML parse error");
+  const entries=[...doc.querySelectorAll("entry")];
+  const rows=entries.map(en=>{
+   const get=tag=>en.getElementsByTagNameNS("*",tag)[0]?.textContent?.trim()||"";
+   return {date:get("NEW_DATE")||get("d:NEW_DATE"),two:get("BC_2YEAR")||get("d:BC_2YEAR"),ten:get("BC_10YEAR")||get("d:BC_10YEAR")};
+  }).filter(x=>x.date&&x.two&&x.ten).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!rows.length)throw Error("Treasury neposkytlo použiteľné 2Y/10Y");
+  const x=rows[0],two=Number(x.two),ten=Number(x.ten),spread=ten-two;
+  latestYield.usd={two:{value:two,date:x.date},ten:{value:ten,date:x.date},spread};
+  return latestYield.usd;
+ }finally{clearTimeout(tm);}
+}
+
+async function loadOIS(){
+ const state=document.getElementById("oisState"),box=document.getElementById("oisCards");
+ state.textContent="ČIASTOČNE DOSTUPNÉ VEREJNÉ KRIVKY";
+ box.innerHTML=`<div class="tile"><strong>EUR</strong><div class="big warn">ECB yield curve</div><small>Denná oficiálna eurozónová krivka je zobrazená v sekcii Yield Curves vyššie.</small></div><div class="tile"><strong>USD</strong><div class="big warn">U.S. Treasury</div><small>Oficiálna denná Treasury krivka je zobrazená v sekcii Yield Curves vyššie.</small></div><div class="tile"><strong>GBP · JPY · AUD · NZD</strong><div class="big warn">Bez porovnateľného feedu</div><small>Bez stabilného, overeného bezplatného OIS/futures feedu pre celý menový košík.</small></div>`;
+ document.getElementById("oisMeta").innerHTML=`Verejné referencie: <a href="https://data.ecb.europa.eu/methodology/yield-curves" target="_blank" rel="noopener">ECB methodology</a> · <a href="https://www.federalreserve.gov/data/yield-curve-models.htm" target="_blank" rel="noopener">Federal Reserve yield curve models</a>. Tieto krivky nie sú OIS pravdepodobnosti. CheckMySwap verejné krivky zatiaľ nie sú označené ako aktívne, kým sa nepotvrdí stabilný endpoint, dátum, pokrytie a povolenie použitia.`;
+ return {ok:0,total:4,extra:0,errors:0,unverified:true};
+}
+
+async function refreshAll(){
+ const b=document.getElementById("refreshBtn");b.disabled=true;document.getElementById("systemState").textContent="AKTUALIZUJEM…";
+ const outcomes=await Promise.allSettled([loadRates(),loadMacro(),loadCOT(),loadPolicy(),loadEuroYield(),loadUSTreasuryYield(),loadCalendar()]);
+ const oisOutcome=await Promise.allSettled([loadOIS()]); const oisData=oisOutcome[0].status==="fulfilled"?oisOutcome[0].value:null;
+ const ratesOK=outcomes[0].status==="fulfilled";
+ const macroResult=outcomes[1].status==="fulfilled"?outcomes[1].value:null;
+ const macroCount=macroResult?.count||0;
+ const policyCount=outcomes[3].status==="fulfilled"?(outcomes[3].value?.ok||0):0;
+ const euroYieldOK=outcomes[4].status==="fulfilled"; const usYieldOK=outcomes[5].status==="fulfilled"; const calendarOK=outcomes[6].status==="fulfilled"; const yieldOK=euroYieldOK&&usYieldOK;
+ const complete=ratesOK&&macroCount===18&&Object.keys(latestCOT).length===5; const calendarStatus=calendarOK?"KALENDÁR OK":"KALENDÁR NEDOSTUPNÝ";
+ if(euroYieldOK||usYieldOK){
+  const eur=euroYieldOK?latestYield.eur:null;
+  const eurSpread=eur?eur.spread:null;
+  const usd=usYieldOK?latestYield.usd:null;
+  document.getElementById("yieldCards").innerHTML=
+   `<div class="tile"><strong>EUR 2Y</strong><div class="big">${eur?fmt(eur.two.value)+"%":"—"}</div><small>${eur?.two.date||"ECB YC unavailable"}</small></div>
+    <div class="tile"><strong>EUR 10Y</strong><div class="big">${eur?fmt(eur.ten.value)+"%":"—"}</div><small>${eur?.ten.date||"ECB YC unavailable"}</small></div>
+    <div class="tile"><strong>EUR 2s10s</strong><div class="big">${eurSpread===null?"—":fmt(eurSpread)+" pp"}</div><small>ECB AAA zero-coupon</small></div>
+    <div class="tile"><strong>USD 2Y</strong><div class="big">${usd?fmt(usd.two.value)+"%":"—"}</div><small>${formatObsDate(usd?.two.date)||"Treasury unavailable"}</small></div>
+    <div class="tile"><strong>USD 10Y</strong><div class="big">${usd?fmt(usd.ten.value)+"%":"—"}</div><small>${formatObsDate(usd?.ten.date)||"Treasury unavailable"}</small></div>
+    <div class="tile"><strong>USD 2s10s</strong><div class="big">${usd?fmt(usd.spread)+" pp":"—"}</div><small>US Treasury par yield</small></div>`;
+  document.getElementById("yieldState").textContent=`EUR ${euroYieldOK?"OK":"CHYBA"} · USD ${usYieldOK?"OK":"CHYBA"}`;
+  document.getElementById("yieldMeta").textContent=`ECB YC: ${eur?.two.date||"nedostupné"} · U.S. Treasury: ${formatObsDate(usd?.two.date)||"nedostupné"} · načítané ${new Date().toLocaleString("sk-SK")}. Metodiky EUR/USD sa líšia.`;
+ }
+ if(!euroYieldOK&&!usYieldOK){document.getElementById("yieldCards").innerHTML='<div class="tile"><strong>EUR 2Y / 10Y</strong><small>ECB zdroj nedostupný</small></div><div class="tile"><strong>USD 2Y / 10Y</strong><small>U.S. Treasury zdroj nedostupný</small></div>';document.getElementById("yieldState").textContent="VÝNOSOVÉ KRIVKY NEDOSTUPNÉ";}
+ buildScores();
+ document.getElementById("systemState").textContent=complete?"CORE ZDROJE AKTÍVNE":(ratesOK||macroCount>0?"ČIASTOČNÉ CORE DÁTA":"CORE ZDROJE NEDOSTUPNÉ");
+ document.getElementById("refreshTime").innerHTML=`Posledná kontrola: ${new Date().toLocaleString("sk-SK")}<br>ECB: ${ratesOK?"OK":"CHYBA"} · World Bank: ${macroCount}/18 · CFTC: ${Object.keys(latestCOT).length}/5 · BIS: ${policyCount}/6 · ECB yield: ${euroYieldOK?"OK":"—"} · US Treasury: ${usYieldOK?"OK":"—"} · Kalendár: ${calendarOK?"OK":"—"} · OIS: neoverené · EUR/USD yield curves · Automatická kontrola každých 15 minút`;
+ const source=document.getElementById("sourceStatus");
+ source.innerHTML=`<div class="metric"><span>ECB / Frankfurter</span><b class="${outcomes[0].status==="fulfilled"?"good":"bad"}">${outcomes[0].status==="fulfilled"?"Aktívne":"Nedostupné"}</b></div><div class="metric"><span>World Bank API</span><b class="${macroCount===18?"good":macroCount>0?"warn":"bad"}">${macroCount===18?"Aktívne · 18/18":macroCount>0?"Čiastočné · "+macroCount+"/18":"Nedostupné"}</b></div><div class="metric"><span>CFTC COT (TFF)</span><b class="${Object.keys(latestCOT).length===5?"good": "warn"}">${Object.keys(latestCOT).length===5?"Aktívne · 5/5 kontraktov":cotError?"Chyba: "+cotError:"Načítavam / čiastočné dáta"}</b></div><div class="metric"><span>BIS · policy rates</span><b class="${policyCount===6?"good":"warn"}">${policyCount}/6 dostupných</b></div><div class="metric"><span>ECB yield curve</span><b class="${euroYieldOK?"good":"warn"}">${euroYieldOK?"Aktívna · "+(latestYield.eur?.two.date||"bez dátumu"):"Nedostupná"}</b></div><div class="metric"><span>U.S. Treasury yields</span><b class="${usYieldOK?"good":"warn"}">${usYieldOK?"Aktívne · "+(formatObsDate(latestYield.usd?.two.date)||"bez dátumu"):"Nedostupné"}</b></div><div class="metric"><span>Economic calendar</span><b class="${calendarOK?"good":"warn"}">${calendarOK?"Aktívny · "+(document.getElementById("calendarState").textContent):"Nedostupný"}</b></div><div class="metric"><span>Yield curves · súhrn</span><b class="${yieldOK?"good":(euroYieldOK||usYieldOK)?"warn":"bad"}">${yieldOK?"Obe aktívne":(euroYieldOK||usYieldOK)?"Čiastočne aktívne":"Nedostupné"} · EUR ${euroYieldOK?"OK":"CHYBA"} / USD ${usYieldOK?"OK":"CHYBA"}</b></div><div class="metric"><span>Public rate curves · EUR/USD + partial</span><b class="${oisData?.ok===4?"warn":"warn"}">${oisData?"Referenčné krivky EUR/USD dostupné vyššie; OIS feed neoverený":"Nedostupné / neoverené"}</b></div><div class="metric"><span>Economic news calendar · ShowMyTrades</span><b class="${calendarOK?"good":"warn"}">${calendarOK?"Aktívny · forecast/previous/actual podľa dostupnosti":"Nedostupný"}</b></div><div class="metric"><span>Analyst consensus</span><b class="warn">Nepripojený · bez overeného bezplatného feedu</b></div>`;
+ b.disabled=false;
+}
+async function loadCOT(){
+ const btn=document.getElementById("cotRefresh"); if(btn)btn.disabled=true;
+ document.getElementById("cotState").textContent="NAČÍTAVAM CFTC…";
+ try{
+  const codes=cotContracts.map(x=>"'"+x.code+"'").join(",");
+  const fields=["id","market_and_exchange_names","report_date_as_yyyy_mm_dd","cftc_contract_market_code","open_interest_all","lev_money_positions_long","lev_money_positions_short","asset_mgr_positions_long","asset_mgr_positions_short"].join(",");
+  const url="https://publicreporting.cftc.gov/resource/gpe5-46if.json?$select="+encodeURIComponent(fields)+"&$where="+encodeURIComponent("cftc_contract_market_code in ("+codes+")")+"&$order=report_date_as_yyyy_mm_dd DESC&$limit=1000";
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+  let r;try{r=await fetch(url,{signal:controller.signal,cache:"no-store",headers:{"Accept":"application/json"}})}finally{clearTimeout(timer)}
+  if(!r.ok)throw Error("CFTC HTTP "+r.status);
+  const rows=await r.json();if(!Array.isArray(rows)||!rows.length)throw Error("CFTC nevrátilo žiadne záznamy");
+  const grouped={};rows.forEach(x=>{const c=String(x.cftc_contract_market_code||"");(grouped[c]??=[]).push(x)});
+  let html="",count=0;latestCOT={};cotError="";
+  cotContracts.forEach(c=>{
+   const arr=(grouped[c.code]||[]).sort((a,b)=>String(b.report_date_as_yyyy_mm_dd).localeCompare(String(a.report_date_as_yyyy_mm_dd)));
+   const a=arr[0],b=arr[1];if(!a)return;
+   const n=(x)=>Number(x||0);const lev=n(a.lev_money_positions_long)-n(a.lev_money_positions_short);const levPrev=b?n(b.lev_money_positions_long)-n(b.lev_money_positions_short):null;
+   const ch=levPrev===null?null:lev-levPrev;const oi=n(a.open_interest_all);const pct=oi?lev/oi*100:null;const am=n(a.asset_mgr_positions_long)-n(a.asset_mgr_positions_short);
+   const hist=arr.map(x=>{const open=n(x.open_interest_all);return open?(n(x.lev_money_positions_long)-n(x.lev_money_positions_short))/open*100:null}).filter(x=>x!==null);
+   const mean=hist.reduce((z,x)=>z+x,0)/(hist.length||1);const sd=Math.sqrt(hist.reduce((z,x)=>z+(x-mean)**2,0)/(hist.length||1));
+   const cotZ=sd>0?(pct-mean)/sd:0;
+   latestCOT[c.ccy]={net:lev,change:ch,pct,date:a.report_date_as_yyyy_mm_dd,asset:am,oi,cotScore:Math.max(-10,Math.min(10,cotZ*3)),historyCount:hist.length};count++;
+   const cls=lev>0?"good":lev<0?"bad":"warn";
+   html+=`<tr><td><b>${c.ccy}</b><br><small>${c.name}</small></td><td class="${cls}">${fmt(lev)}</td><td class="${ch===null?"warn":ch>=0?"good":"bad"}">${ch===null?"—":(ch>0?"+":"")+fmt(ch)}</td><td>${pct===null?"—":fmt(pct)+"%"}</td><td>${fmt(am)}</td><td>${a.report_date_as_yyyy_mm_dd}</td></tr>`;
+  });
+  document.getElementById("cotRows").innerHTML=html||'<tr><td colspan="6">Pre vybrané menové kontrakty sa nenašli dáta.</td></tr>';
+  document.getElementById("cotState").textContent=count===5?"CFTC DÁTA AKTÍVNE":count+"/5 KONTRAKTOV";
+  document.getElementById("cotSourceStatus").textContent=count===5?"Aktívne · 5/5 kontraktov":count+"/5 kontraktov · čiastočné";document.getElementById("cotSourceStatus").className=count===5?"good":"warn";
+  document.getElementById("cotMeta").textContent="CFTC TFF Futures Only · načítané "+new Date().toLocaleString("sk-SK")+" · najnovšie report dates v tabuľke.";
+  buildScores();
+ }catch(e){cotError=e.name==="AbortError"?"timeout":e.message;document.getElementById("cotState").textContent="COT NEDOSTUPNÉ";document.getElementById("cotSourceStatus").textContent="Chyba: "+(e.name==="AbortError"?"timeout":e.message);document.getElementById("cotSourceStatus").className="bad";document.getElementById("cotRows").innerHTML='<tr><td colspan="6">CFTC dáta sa nepodarilo načítať. Skús Obnoviť COT.</td></tr>';document.getElementById("cotMeta").textContent="Posledný pokus: "+new Date().toLocaleString("sk-SK")+" · "+e.message;}
+ finally{if(btn)btn.disabled=false;}
+}
+function clamp(v,min=-10,max=10){return Math.max(min,Math.min(max,v));}
+function componentDelta(now,prev,scale){if(!now||!prev||!Number.isFinite(now.value)||!Number.isFinite(prev.value))return null;return clamp(((now.value-prev.value)/scale)*10);}
+function scoreClass(v){return v>0.35?"score-positive":v< -0.35?"score-negative":"score-neutral";}
+function scoreLabel(v){return v>1?"Pozitívne momentum":v< -1?"Negatívne momentum":"Bez jasného momenta";}
+function buildScores(){
+ // V5.6 FINAL: transparent annual macro momentum. Each series is compared independently;
+ // World Bank release years need not match across indicators.
+ const weights={gdp:0.45,unemployment:0.30,inflation:0.25},scores={};let ready=0;
+ for(const ccy of ["EUR","USD","GBP","AUD","NZD","JPY"]){
+  const m=latestMacro[ccy];if(!m){scores[ccy]=null;continue;}
+  const parts=[];
+  const g=componentDelta(m.gdp,m.gdpPrev,2.0);
+  if(g!==null)parts.push({key:"Rast HDP",score:g,weight:weights.gdp,period:`${m.gdp.year} vs ${m.gdpPrev.year}`,detail:g>0?"rast zrýchlil":g<0?"rast spomalil":"bez zmeny"});
+  if(m.unemp&&m.unempPrev&&Number.isFinite(m.unemp.value)&&Number.isFinite(m.unempPrev.value)){
+   const u=clamp(((m.unempPrev.value-m.unemp.value)/1.0)*10);
+   parts.push({key:"Trh práce",score:u,weight:weights.unemployment,period:`${m.unemp.year} vs ${m.unempPrev.year}`,detail:u>0?"nezamestnanosť klesla":u<0?"nezamestnanosť vzrástla":"bez zmeny"});
+  }
+  // Inflation is scored by movement toward a 2% reference, not simply by lower inflation.
+  if(m.cpi&&m.cpiPrev&&Number.isFinite(m.cpi.value)&&Number.isFinite(m.cpiPrev.value)){
+   const oldGap=Math.abs(m.cpiPrev.value-2.0),newGap=Math.abs(m.cpi.value-2.0);
+   const inf=clamp(((oldGap-newGap)/1.0)*10);
+   parts.push({key:"Inflácia vs 2 % referencia",score:inf,weight:weights.inflation,period:`${m.cpi.year} vs ${m.cpiPrev.year}`,detail:inf>0?"priblížila sa k 2 %":inf<0?"vzdialila sa od 2 %":"bez zmeny"});
+  }
+  const w=parts.reduce((a,x)=>a+x.weight,0);
+  const value=w>0?clamp(parts.reduce((a,x)=>a+x.score*x.weight,0)/w):null;
+  const years=parts.map(x=>Number(x.period.split(" vs ")[0])).filter(Number.isFinite);
+  const oldest=years.length?Math.min(...years):null,age=oldest?new Date().getFullYear()-oldest:99;
+  const confidence=value===null?"Nedostatočné dáta":age>2?"Veľmi nízka":"Nízka";
+  scores[ccy]={value,parts,coverage:w,confidence,oldestYear:oldest,dataAge:age};if(value!==null)ready++;
+ }
+ const labels={EUR:"Eurozóna",USD:"USA",GBP:"UK",AUD:"Austrália",NZD:"Nový Zéland",JPY:"Japonsko"};
+ document.getElementById("scoreCards").innerHTML=Object.entries(scores).map(([ccy,x])=>{
+  if(!x||x.value===null)return `<div class="tile"><strong>${ccy}</strong><div class="big warn">NEDOSTUPNÉ</div><small>Nie sú dostupné aspoň dve pozorovania žiadneho makro ukazovateľa.</small></div>`;
+  const cls=scoreClass(x.value);return `<div class="tile"><strong>${ccy} <span class="score-value ${cls}">${x.value>0?"+":""}${x.value.toFixed(1)}</span></strong><small>${labels[ccy]} · ${x.confidence} dôvera · posledné porovnanie od ${x.oldestYear}</small><div class="score-detail">${x.parts.map(q=>q.key+": "+(q.score>0?"+":"")+q.score.toFixed(1)+" · "+q.detail+" ("+q.period+")").join("<br>")}</div></div>`;
+ }).join("");
+ const ranked=Object.entries(scores).filter(([k,v])=>v&&v.value!==null).sort((a,b)=>b[1].value-a[1].value);
+ document.getElementById("currencyRanking").innerHTML=ranked.length?ranked.map(([ccy,x],i)=>`<div class="tile"><strong>#${i+1} ${ccy}</strong><div class="big ${scoreClass(x.value)}">${x.value>0?"+":""}${x.value.toFixed(1)}</div><small>${labels[ccy]} · ${x.confidence} dôvera</small></div>`).join(""):'<div class="tile"><strong>Poradie nedostupné</strong><small>Makro zdroj neposkytol porovnateľné pozorovania.</small></div>';
+ const pairs=[["EURUSD","EUR","USD"],["GBPUSD","GBP","USD"],["AUDUSD","AUD","USD"],["NZDUSD","NZD","USD"],["USDJPY","USD","JPY"]];
+ document.getElementById("pairScores").innerHTML=pairs.map(([pair,base,quote])=>{
+  const a=scores[base],b=scores[quote],complete=!!(a&&b&&a.value!==null&&b.value!==null);
+  if(!complete)return `<div class="tile"><strong>${pair}</strong><div class="big warn">DATA GAP</div><small>Chýbajú makro pozorovania pre jednu z mien; smer sa nedá vypočítať.</small></div>`;
+  const tilt=clamp((a.value-b.value)/2,-10,10),cls=scoreClass(tilt);
+  const verdict=tilt>0.35?`${base} má priaznivejšie makro momentum`:tilt< -0.35?`${quote} má priaznivejšie makro momentum`:"Makro momentum je približne vyrovnané";
+  const evidence=`${base}: ${a.parts.map(x=>x.key+" "+(x.score>0?"+":"")+x.score.toFixed(1)).join("; ")}. ${quote}: ${b.parts.map(x=>x.key+" "+(x.score>0?"+":"")+x.score.toFixed(1)).join("; ")}.`;
+  return `<div class="tile"><strong>${pair}</strong><div class="big ${cls}">${tilt>0?"+":""}${tilt.toFixed(1)}</div><small>RELATÍVNE MAKRO · ${verdict} · nízka dôvera</small><div class="score-detail">${evidence}<br>Výpočet: (${base} ${a.value.toFixed(1)} − ${quote} ${b.value.toFixed(1)}) / 2. Kladné číslo podporuje základnú menu páru; záporné podporuje kótovaciu menu. Skóre je ročný makro kontext, nie obchodný signál.</div></div>`;
+ }).join("");
+ document.getElementById("horizonCards").innerHTML=`<div class="tile"><strong>KRÁTKODOBÝ · dni až 2 týždne</strong><div class="big warn">NEWS CONTEXT</div><small>Kalendár zobrazuje udalosti a dostupné actual/forecast. Bez spoľahlivej histórie prekvapení a trhového pricingu z nich nerobíme automatické smerové skóre.</small></div><div class="tile"><strong>STREDNODOBÝ · 1 až 3 mesiace</strong><div class="big warn">LIMITED</div><small>Ročné makro série sú pomalé. Sleduj samostatne policy rates, výnosy a COT; tieto dôkazy nie sú plne porovnateľné pre všetkých šesť mien.</small></div><div class="tile"><strong>DLHODOBÝ · 6 až 12 mesiacov</strong><div class="big ${ready===6?"score-neutral":"warn"}">MACRO BIAS</div><small>Orientačné ročné makro momentum HDP, trhu práce a inflácie. Nízka dôvera; bez historickej validácie nejde o predikčný model.</small></div>`;
+ document.getElementById("scoreState").textContent=ready+"/6 MIEN · MAKRO SKÓRE";
+ document.getElementById("scoreMeta").textContent="METODIKA V5.7: HDP momentum 45 % (zmena rastu medzi poslednými dvoma ročnými pozorovaniami; +2 p. b. = +10 komponentových bodov); trh práce 30 % (pokles nezamestnanosti o 1 p. b. = +10); inflácia 25 % (zmena vzdialenosti od 2 % referencie; priblíženie = pozitívny komponent). Každá séria sa porovnáva samostatne, roky nemusia byť totožné. Dostupné komponenty sa váhovo normalizujú; chýbajúce komponenty sa neimputujú. Pair skóre = (základná mena − kótovacia mena) / 2, takže znamienko zodpovedá smeru páru. Ide o transparentný heuristický makro kompas z oneskorených ročných World Bank dát, nie štatisticky validovaný FX model. Inflácia 2 % je zjednodušená spoločná referencia; rozdielne mandáty centrálnych bánk a deflačné prostredie môžu interpretáciu meniť. Policy rates, yields, COT a kalendár ostávajú samostatnými dôkazmi a nie sú skryto započítané.";
+ return scores;
+}
+function readSummary(){
+ let t="RED ACE Smart Macro Terminal. ";
+ if(latestRates.EURUSD)t+=`ECB referenčné kurzy. EUR USD ${fmt(latestRates.EURUSD)}. GBP USD ${fmt(latestRates.GBPUSD)}. AUD USD ${fmt(latestRates.AUDUSD)}. NZD USD ${fmt(latestRates.NZDUSD)}. USD JPY ${fmt(latestRates.USDJPY)}. `;
+ if(Object.keys(latestCOT).length){t+=" CFTC COT. ";Object.entries(latestCOT).forEach(([k,v])=>{t+=k+" leveraged funds čistá pozícia "+fmt(v.net)+" kontraktov. ";});}
+ t+="RED ACE je fundamentálny doplnok k samostatnej technickej analýze. Makro momentum používa zmenu ročného rastu HDP a nezamestnanosti z World Bank. Inflácia, policy rates, yield curves a COT sú oddelené kontextové dôkazy. Ročné údaje nie sú vhodné na krátkodobé načasovanie. Verejné krivky a konsenzus nie sú kompletné pre všetkých šesť mien. Výstupy nie sú obchodným pokynom.";
+ const u=new SpeechSynthesisUtterance(t);u.lang="sk-SK";speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+function stopVoice(){speechSynthesis.cancel()}
+function updateLocalClock(){const el=document.getElementById("localClock");if(el)el.textContent="LOKÁLNY ČAS · "+new Intl.DateTimeFormat("sk-SK",{dateStyle:"medium",timeStyle:"medium"}).format(new Date());}
+updateLocalClock();setInterval(updateLocalClock,1000);
+const historyDateInput=document.getElementById("historyDate");if(historyDateInput)historyDateInput.value=new Date().toLocaleDateString("en-CA");
+refreshAll();setInterval(refreshAll,15*60*1000);
+</script></body></html>
